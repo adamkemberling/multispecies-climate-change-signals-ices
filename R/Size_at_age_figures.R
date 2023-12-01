@@ -507,12 +507,17 @@ percent_change_kable_table <- results_wide %>%
 # Save as html first
 percent_change_kable_table %>% save_kable(file = here::here("Tables/Table_S3.html"))
 
-# Then webshot it
+# Then webshot it - local test
 webshot2::webshot(
   here::here("Tables/Table_S3.html"), here::here("Tables/Table_S3.pdf"), 
-  vwidth = 2550, vheight = 3300, # approx standard letter with 300 dpi
+  vwidth = 2550, vheight = 3300, # approx standard letter with 300 dpi: n-inch * 300
   )
 
+# Send copy to cloud location
+webshot2::webshot(
+  here::here("Tables/Table_S3.html"), str_c(decadal_hires_folder, "Table_S3.pdf"), 
+  vwidth = 2550, vheight = 3300, # approx standard letter with 300 dpi
+)
 # # Data from t-tests
 # write_csv(results_wide, str_c(decadal_folder, "length_and_weight_atage_ttest_results.csv"))
 
