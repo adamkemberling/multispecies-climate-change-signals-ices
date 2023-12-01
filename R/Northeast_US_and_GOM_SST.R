@@ -18,7 +18,7 @@ library(rcartocolor)
 }
 
 
-# # Tweak the theme
+# # Tweak the theme for on screen viewing
 # new_theme <- function(...){
 #   theme_gmri() +
 #     theme(
@@ -71,7 +71,7 @@ deg_c <- "\u00b0C"
 us_poly <- rnaturalearth::ne_states("united states of america", returnclass = "sf")
 canada <- rnaturalearth::ne_states("canada", returnclass = "sf")
 
-# Survey Area
+# Survey Area Shapefile
 nmfs_path <- cs_path("res", "Shapefiles/nmfs_trawl_regions")
 strata <- read_sf(str_c(nmfs_path, "nmfs_trawl_inuse_strata.geojson")) %>% 
   mutate(decadal_area = ifelse(survey_area == "Southern New England", "Mid-Atlantic Bight", survey_area),
@@ -101,7 +101,8 @@ fig1_map
 ####  Load Data  ####
 
 
-# Load SST
+# Load SST - Downloaded from Physical Science Lab
+# Data processing here: github.com/adamkemberling/oisst_mainstays
 shelf_sst <- oisst_access_timeseries("trawl", "inuse strata", box_location = "cloudstorage")
 gom_sst <- oisst_access_timeseries("epu", "gom", box_location = "cloudstorage")
 
@@ -132,6 +133,8 @@ late_avg_gom <- annual_gom %>% filter(year %in% c(2010:2021)) %>% summarise(acro
 
 
 #### 2. Load global temps, get avgs  ####
+
+
 # # Global Temperature Anomalies
 oisst_path <- cs_path("res", "OISST/oisst_mainstays")
 global_anoms <- read_csv(

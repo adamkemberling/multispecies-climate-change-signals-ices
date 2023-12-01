@@ -65,8 +65,15 @@ theme_set(theme_ices())
 
 
 # Access Biological Data with {targets}
-withr::with_dir(rprojroot::find_root('_targets.R'), 
-                tar_load(survdat_biological))
+# Trawl Cleanup Pipeline Part of another Repository:
+# github.com/adamkemberling/nefsc_trawl
+withr::with_dir(
+  new = "~/Documents/Repositories/nefsc_trawl", 
+  code = tar_load(survdat_biological))
+
+# # Original:
+# withr::with_dir(rprojroot::find_root('_targets.R'), 
+#                 tar_load(survdat_biological))
 
 
 
@@ -419,7 +426,95 @@ waa_1970_start <- map_dfr(
 
 
 
+##### c. Percent Change Table  ####
 
+###### Table S3.  ####
+
+# Reshape the length at age results
+len_results <- laa_1970_start  %>%
+  rename(mean_1970_2009 = `1970-2009`,
+         mean_2010_2019 = `2010-2019`) %>%
+  mutate(percent_change = ((mean_2010_2019-mean_1970_2009)/mean_1970_2009)*100,
+         .after = "mean_2010_2019") %>%
+  mutate(early_period_coverage = str_c(earliest_measure, "-2009"), .after = "earliest_measure") %>%
+  #select(-c(method, variance_test, comparison_var, statistical_test, earliest_measure)) %>%
+  select(-c(method, variance_test, comparison_var, statistical_test)) %>%
+  rename(start_year = earliest_measure) %>%select(-starts_with("n_obs")) %>% 
+  select(-starts_with("obs")) %>% 
+  select(-ends_with("coverage")) %>% 
+  select(-starts_with("n_years")) %>% 
+  select(-bartlett_p) %>% 
+  rename_with(~str_c("l_", .), 3:7)
+
+# Reshape the weight at age results
+wt_results <- waa_1970_start %>%
+  rename(mean_1970_2009 = `1970-2009`,
+         mean_2010_2019 = `2010-2019`) %>%
+  mutate(percent_change = ((mean_2010_2019-mean_1970_2009)/mean_1970_2009)*100,
+         .after = "mean_2010_2019") %>%
+  mutate(early_period_coverage = str_c(earliest_measure, "-2009"), .after = "earliest_measure") %>%
+  #select(-c(method, variance_test, comparison_var, statistical_test, earliest_measure)) %>%
+  select(-c(method, variance_test, comparison_var, statistical_test)) %>%
+  rename(start_year = earliest_measure) %>%
+  select(-starts_with("n_obs")) %>% 
+  select(-starts_with("obs")) %>% 
+  select(-ends_with("coverage")) %>% 
+  select(-starts_with("n_years")) %>% 
+  select(-bartlett_p) %>% 
+  rename_with(~str_c("w_", .), 3:7)
+
+ 
+ 
+# # Join them together into one very wide table
+results_wide <- left_join(len_results, wt_results, by = c("comname", "age"))
+
+library(kableExtra)
+
+# Make NA show as blank
+options(knitr.kable.NA = '')
+
+# Last second tidy
+results_wide <- mutate(results_wide, comname = str_to_sentence(comname)) %>% 
+  mutate(across(starts_with("l_"), ~round(.x, 2))) %>% 
+  mutate(across(starts_with("w_"), ~round(.x, 2))) %>% 
+  # Just need to hide non-significant things
+  mutate(across(starts_with("l_"), ~ifelse(l_p.value > 0.05, NA, .x))) %>% 
+  mutate(across(starts_with("w_"), ~ifelse(w_p.value > 0.05, NA, .x))) %>% 
+  # And if its very small format in a shorter way
+  mutate(across(ends_with("p.value"), ~ifelse(.x < 0.01, "<0.01", .x)))
+
+# MAke the dumb table
+percent_change_kable_table <- results_wide %>% 
+  select(-1) %>% 
+  kable(
+    col.names = c(
+      #"Species", 
+      "Age",
+      "Start\nYear", "Mean\n1970-2009", "Mean\n2010-2019","% Change", "p",
+      "Start\nYear", "Mean\n1970-2009", "Mean\n2010-2019", "% Change", "p"), 
+    #format = "latex", 
+    longtable = T
+    ) %>% 
+  # Can't save it with the header - triggers magick error
+  add_header_above(header = c("", "Length At Age" = 5, "Weight at Age" = 5)) %>% 
+  kable_paper()  %>%
+  kable_styling(font_size = 12)  %>% 
+  # Do grouping for species
+  pack_rows(index = table(results_wide$comname))
+
+# Can we save it in a non-stupid pdf way - only with webshot
+
+# Save as html first
+percent_change_kable_table %>% save_kable(file = here::here("Tables/Table_S3.html"))
+
+# Then webshot it
+webshot2::webshot(
+  here::here("Tables/Table_S3.html"), here::here("Tables/Table_S3.pdf"), 
+  vwidth = 2550, vheight = 3300, # approx standard letter with 300 dpi
+  )
+
+# # Data from t-tests
+# write_csv(results_wide, str_c(decadal_folder, "length_and_weight_atage_ttest_results.csv"))
 
 
 

@@ -41,52 +41,25 @@ decadal_folder <- cs_path(
   subfolder = "Projects/Decadal Variability/Revisions/Strat_Abund/")
 
 
-
+#### Load Data  ####
 
 # Load the clean survdat data with targets
-tar_load("survdat_clean")
+
+# Trawl Cleanup Pipeline Part of another Repository:
+# github.com/adamkemberling/nefsc_trawl
+withr::with_dir(
+  new = "~/Documents/Repositories/nefsc_trawl", 
+  code = tar_load(survdat_clean))
+
+# Code from original repo structure
+#tar_load("survdat_clean")
+
+# Rename with minor filtering
 survdat <- survdat_clean %>%  filter(season %in% c("Spring", "Fall"))
 
 
 
-#--------- Testing: Is crazy abundance coming from cleanup code --------------
 
-# # Load the raw to see if the cleanup changes what the aggregate numbers are:
-# sdat_path <- cs_path(box_group = "RES_Data", subfolder = "NMFS_trawl/SURVDAT_current")
-# load(str_c(sdat_path, "NEFSC_BTS_all_seasons_03032021.RData"))
-# survdat <- survey$survdat %>% as_tibble() %>% rename_all(tolower) %>% 
-#   mutate(biomass_kg = biomass,
-#          est_year = year,
-#          cruise6 = str_pad(cruise6, 6, "left", "0"),
-#          station = str_pad(station, 3, "left", "0"),
-#          stratum = str_pad(stratum, 4, "left", "0"),
-#          strat_num = stringr::str_sub(stratum, 2, 3),
-#          id      = str_c(cruise6, station, stratum))
-# 
-# 
-# # Drop the usual strata:
-# survdat <- survdat %>% filter(
-#   stratum >= 01010,
-#   stratum <= 01760,
-#   stratum != 1310,
-#   stratum != 1320,
-#   stratum != 1330,
-#   stratum != 1350,
-#   stratum != 1410,
-#   stratum != 1420,
-#   stratum != 1490,
-#   
-#   # Filter to the broader GOM, GB, SNE, MAB areas we include
-#   strat_num %in% c(
-#     as.character(13:23), #GB
-#     as.character(24:40), #GOM
-#     str_pad(as.character(1:12), width = 2, pad = "0", side = "left"), #SNE
-#     as.character(61:76) # MAB
-#   ),
-#   
-#   # Seasons filtered
-#   season %in% c("SPRING", "FALL")
-# )
 
 #----------  Stratum Area Details. ----------
 
