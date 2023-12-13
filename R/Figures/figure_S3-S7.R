@@ -6,7 +6,7 @@ library(grid)
 library(gridExtra)
 
 #  Read in data #### 
-all_strata <- read_rds(here("Processed Data", "all_strata_t_test.rds"))
+all_strata <- read_rds(here("Data", "all_strata_t_test.rds"))
 
 all_strata <- all_strata %>%
   unnest(data) %>% 

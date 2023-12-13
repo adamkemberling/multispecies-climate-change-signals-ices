@@ -5,7 +5,7 @@ library(tidyverse)
 library(broom)
 library(gmRi)
 
-annual_averages <- read_rds("Processed Data/annual_averages.rds") %>% 
+annual_averages <- read_rds("Data/annual_averages.rds") %>% 
   filter(!est_year == "2017") %>% # Removed due to disproportionate sampling
   mutate(group = ifelse(est_year < 2010, 
                         "1970-2009", 
@@ -31,4 +31,4 @@ all_strata_t_test <- annual_averages %>%
   }))
 
 # Write out for plotting ####
-write_rds(all_strata_t_test, here("Processed Data", "all_strata_t_test.rds"))
+write_rds(all_strata_t_test, here("Data", "all_strata_t_test.rds"))

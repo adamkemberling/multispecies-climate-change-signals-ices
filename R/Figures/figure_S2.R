@@ -4,7 +4,7 @@ library(here)
 library(tidyverse)
 library(gmRi)
 
-all_strata <- read_rds(here("Processed Data", "all_strata_t_test.rds")) %>%
+all_strata <- read_rds(here("Data", "all_strata_t_test.rds")) %>%
   mutate(comname = stringr::str_to_sentence(comname)) 
 
 decadal_map <- all_strata %>%
