@@ -18,7 +18,7 @@ library(rcartocolor)
 }
 
 
-# # Tweak the theme
+# # Tweak the theme for on screen viewing
 # new_theme <- function(...){
 #   theme_gmri() +
 #     theme(
@@ -61,6 +61,10 @@ decadal_folder <- cs_path(
   box_group = "mills", 
   subfolder = "Projects/Decadal Variability/Revisions/SST/")
 
+
+# Where to put the figures
+decadal_hires_folder <- cs_path("mills", "Projects/Decadal Variability/publication_figures/")
+
 # Degree symbol
 deg_c <- "\u00b0C"
 
@@ -71,7 +75,7 @@ deg_c <- "\u00b0C"
 us_poly <- rnaturalearth::ne_states("united states of america", returnclass = "sf")
 canada <- rnaturalearth::ne_states("canada", returnclass = "sf")
 
-# Survey Area
+# Survey Area Shapefile
 nmfs_path <- cs_path("res", "Shapefiles/nmfs_trawl_regions")
 strata <- read_sf(str_c(nmfs_path, "nmfs_trawl_inuse_strata.geojson")) %>% 
   mutate(decadal_area = ifelse(survey_area == "Southern New England", "Mid-Atlantic Bight", survey_area),
@@ -101,7 +105,8 @@ fig1_map
 ####  Load Data  ####
 
 
-# Load SST
+# Load SST - Downloaded from Physical Science Lab
+# Data processing here: github.com/adamkemberling/oisst_mainstays
 shelf_sst <- oisst_access_timeseries("trawl", "inuse strata", box_location = "cloudstorage")
 gom_sst <- oisst_access_timeseries("epu", "gom", box_location = "cloudstorage")
 
@@ -132,6 +137,8 @@ late_avg_gom <- annual_gom %>% filter(year %in% c(2010:2021)) %>% summarise(acro
 
 
 #### 2. Load global temps, get avgs  ####
+
+
 # # Global Temperature Anomalies
 oisst_path <- cs_path("res", "OISST/oisst_mainstays")
 global_anoms <- read_csv(
@@ -577,10 +584,24 @@ shelf_heatmap_smol <- ggplot(hw_dat, aes(x = flat_date, y = year)) +
 
 
 
+# Complex layouts can be created with the `design` argument
+design <- "
+  11##
+  1122
+  3322
+  3322
+  3322
+  3322
+  3322
+"
 
 # Put the Mosaic Together:
-sst_mosaic <- (shelf_warming_plot/ shelf_heatmap_smol) | rates_map
-sst_mosaic
+sst_mosaic <- shelf_warming_plot + 
+  rates_map +
+  shelf_heatmap_smol + 
+  plot_layout(design = design) +
+  plot_annotation(tag_levels = "A", tag_suffix = ".")
+
 
 
 ####  Saving Figures  #####
@@ -615,88 +636,122 @@ sst_mosaic
 
 ####  Publication Figures  ####
 
-# Where to put the figures
-decadal_hires_folder <- cs_path("mills", "Projects/Decadal Variability/publication_figures/")
+
 
 # Sizing from the other figures:
 # Height per Row: 45
 # Width for 2 columns: 170
 
-#--- Study Area Figure
-ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_1.pdf"), 
-  plot = fig1_map, 
-  height = 135, width = 85, units = "mm", 
-  dpi = 500)
+# #--- Study Area Figure
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_1.pdf"), 
+#   plot = fig1_map, 
+#   height = 135, width = 85, units = "mm", 
+#   dpi = 500)
 
 
 #--- Northeast Shelf Figures
 
-# Figure 2 a. Northeast Shelf SST
-ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_2_a.pdf"), 
-  plot = shelf_warming_plot, 
-  height = 90, width = 85, units = "mm", 
-  dpi = 500)
+# # Figure 2 a. Northeast Shelf SST
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_2_a.pdf"), 
+#   plot = shelf_warming_plot, 
+#   height = 90, width = 85, units = "mm", 
+#   dpi = 500)
+# 
+# # Figure 2 b. Northeast Shelf Warming Rate Map
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_2_b.pdf"), 
+#   plot = rates_map, 
+#   height = 135, width = 85, units = "mm", 
+#   dpi = 500)
 
-# Figure 2 b. Northeast Shelf Warming Rate Map
-ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_2_b.pdf"), 
-  plot = rates_map, 
-  height = 135, width = 85, units = "mm", 
-  dpi = 500)
 
 
-# Figure 2 c. Northeast Shelf MHW Heatmap
-shelf_heatmap_2 <-shelf_heatmap + 
+# # Figure 2 c. Northeast Shelf MHW Heatmap
+shelf_heatmap_2 <- shelf_heatmap +
   theme(
-    legend.position = "bottom", 
-    legend.direction = "horizontal", 
+    legend.position = "bottom",
+    legend.direction = "horizontal",
     legend.title = element_text(angle = 0, size = 7),
     legend.text = element_text(size = 6)) +
   guides(fill = guide_colorbar(
     title.position = "top", title.hjust = 0.5, barwidth = unit(4, "cm"), frame.colour = "black", ticks.colour = "black"))
-ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_2_c.pdf"),
-  plot = shelf_heatmap_2, 
-  height = 90, width = 85, units = "mm", 
-  dpi = 500)
 
-# Figure 3 d. Northeast Shelf mosaic
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_2_c.pdf"),
+#   plot = shelf_heatmap_2, 
+#   height = 90, width = 85, units = "mm", 
+#   dpi = 500)
+
+
+
+# Figure 2 d. Northeast Shelf mosaic
 # Save the Mosaic Figure
 ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_2_mosaic.pdf"), 
-  plot = sst_mosaic, 
-  height = 135, width = 170, units = "mm", 
+  filename = str_c(decadal_hires_folder, "Figure_2_mosaic.pdf"),
+  plot = sst_mosaic,
+  height = 135, width = 170, units = "mm",
   dpi = 500)
+
+
 
 
 #--- Gulf of Maine Plots
 
-# S1 a. Gulf of Maine Sea Surface Temperature
-ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_S1_a.pdf"), 
-  plot = gom_warming_plot, 
-  height = 45, width = 85, units = "mm", 
-  dpi = 500)
+# # S1 a. Gulf of Maine Sea Surface Temperature
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_S1_a.pdf"), 
+#   plot = gom_warming_plot, 
+#   height = 45, width = 85, units = "mm", 
+#   dpi = 500)
 
-# S1 b. Gulf of Maine MHW Heatmap
-gom_heatmap_2 <- gom_heatmap + 
+
+# # S1 b. Gulf of Maine MHW Heatmap
+gom_heatmap_2 <- gom_heatmap +
   theme(
-    legend.position = "bottom", 
-    legend.direction = "horizontal", 
+    legend.position = "bottom",
+    legend.direction = "horizontal",
     legend.title = element_text(angle = 0, size = 7),
     legend.text = element_text(size = 6)) +
   guides(fill = guide_colorbar(
     title.position = "top", title.hjust = 0.5, barwidth = unit(4, "cm"), frame.colour = "black", ticks.colour = "black"))
+
+
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_S1_b.png"),
+#   plot = gom_heatmap_2, 
+#   height = 90, width = 85, units = "mm", bg = "white",
+#   dpi = 500)
+
+
+# S1 Mosaic - fixed dims
+gom_sst_mosaic <- (gom_warming_plot / gom_heatmap_2)+
+  plot_layout(
+    widths = unit(85, "mm"),
+    heights = unit(c(45, 90), c('mm', 'mm'))) +
+  plot_annotation(tag_levels = "A", tag_suffix = ".")
+
+# # Sizing is weird when saved...
+# ggsave(
+#   filename = str_c(decadal_hires_folder, "Figure_S1_mosaic.png"),
+#   plot = gom_sst_mosaic,
+#   height = 135, width = 85, units = "mm", bg = "white",
+#   dpi = 500, scale = 1.35
+#   )
+
+# Try this: https://github.com/thomasp85/patchwork/issues/127
+# Or maybe just do relative sizes
+# S1 Mosaic
+gom_sst_mosaic <- (gom_warming_plot / gom_heatmap_2)+ 
+  plot_layout(
+    heights = c(1, 2)) + 
+  plot_annotation(tag_levels = "A", tag_suffix = ".")
+
+# That fixed it...
 ggsave(
-  filename = str_c(decadal_hires_folder, "Figure_S1_b.png"),
-  plot = gom_heatmap_2, 
-  height = 90, width = 85, units = "mm", bg = "white",
-  dpi = 500)
-
-
-
-
-
-
+  filename = str_c(decadal_hires_folder, "Figure_S1_mosaic.png"),
+  plot = gom_sst_mosaic,
+  height = 135, width = 85, units = "mm", bg = "white",
+  dpi = 500
+)
