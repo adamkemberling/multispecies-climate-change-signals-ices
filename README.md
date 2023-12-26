@@ -15,28 +15,21 @@ The `Data` directory contains data access to summary results of our analyses.
 Northeast US Trawl Survey data used for these analyses is publicly available and may be obtained directly from the National Marine Fisheries Service, Northeast Fisheries Science Center. For further inquiries please reach out or submit an issue via github.
 
 Sea surface temperature data has not been included (for size reasons) and may be obtained from: 
-> https://www.ncei.noaa.gov/products/optimum-interpolation-sst
+\> <https://www.ncei.noaa.gov/products/optimum-interpolation-sst> 
 
 #### R
 
-The `R` directory contains the minimum code and documentation to recreate the figures and supplements included in this publication within two folders; `Distribution Analyses` and `Figures`.
+The `R` directory contains the minimum code and documentation to recreate the figures and supplements included in this publication within two folders; `Analyses` and `Figures`.
 
+##### Analyses
 
-##### Distribution Analyses
-To replicate the distribution analyses, run the scripts in the following order;
+-   `distribution_significance_testing.R` performs a statistical t-test on species distributions pre- and post-2010. To complete this analyses, we selected season-strata of interest from the trawl survey data and calculated biomass-weighted averages of latitude, longitude, sea surface temperature, bottom temperature and depth for each species of interest. This cleaned data set is available in the data directory as `annual_averages.rds`.
 
--   `clean_trawl_data.R`
--   `t_testing.R`
--   `strata_effort.R`
--   `stratum_16_t_testing.R`
--   `signif_comparison.R`
+-   (something about growth analyses here)
 
+##### Figures
 
-##### Figures 
-These scripts should be run following the `Distribution Analyses`. The order in which these scripts are run is not important.
-
-#### Processed Data
-Running the `Distribution Analyses` scripts will yield multiple `.rds` files within the `Processed Data` directory. These files are necessary for replicating the figures within the publication and supplement.
+This folder contains the scripts to create the figures featured in the publication and supplemental materials, labeled by figure name.
 
 ### Funding
 

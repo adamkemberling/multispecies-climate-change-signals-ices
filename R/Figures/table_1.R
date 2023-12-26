@@ -6,7 +6,7 @@ library(gmRi)
 library(gt)
 
 # Read in all_strata.rds
-all_strata <- read_rds(here("Processed Data", "all_strata_t_test.rds")) %>% 
+all_strata <- read_rds(here("Data", "all_strata_t_test.rds")) %>% 
   unnest(t.test) %>%
   rename("mean70_09" = "estimate1970to2009",
          "mean10_19" = "estimate2010to2019") %>%
