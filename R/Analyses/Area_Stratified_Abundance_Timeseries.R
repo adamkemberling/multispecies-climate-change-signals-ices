@@ -3,7 +3,9 @@
 # Premise: McCalls basin hypothesis suggests that species with shrinking/growing
 # populations will differently track a favorable environment
 # Goal is to see which species fall into either category
-# Range of specific interest is 2000-2010-2019
+
+
+# Produces Supplemental Figure S15:
 
 # Packages
 library(gmRi)
@@ -78,9 +80,11 @@ stratum_area      <- dplyr::mutate(stratum_area, stratum = as.character(stratum)
 ####  2.  Set Constants:  ####
 
 # Area covered by an albatross standard tow in km2
+# obtained from noaa-edab/survdat github,  code for area-stratification of trawl survey
 alb_tow_km2 <- 0.0384
 
-# catchability coefficient - ideally should change for species guilds or functional groups. 
+# catchability coefficient - 
+# ideally could/should change for species guilds or functional groups. 
 q <- 1
 
 
@@ -89,8 +93,10 @@ q <- 1
 
 ####  3. Stratum Area & Effort Ratios  ####
 
-# Get Annual Stratum Effort, and Area Ratios
+# Get total yearly effort by survey stratum, 
 # number of tows in each stratum by year
+
+# and the relative ratios between strata areas
 # area of a stratum relative to total area of all stratum sampled that year
 
 
@@ -129,6 +135,9 @@ yr_strat_effort %>%
 survdat_areas <- dplyr::left_join(
   survdat_areas, yr_strat_effort, 
   by = c("est_year", "season", "stratum"))
+
+
+
 
 
 
