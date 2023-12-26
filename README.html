@@ -375,39 +375,32 @@ available and may be obtained directly from the National Marine
 Fisheries Service, Northeast Fisheries Science Center. For further
 inquiries please reach out or submit an issue via github.</p>
 <p>Sea surface temperature data has not been included (for size reasons)
-and may be obtained from: &gt; <a href="https://www.ncei.noaa.gov/products/optimum-interpolation-sst" class="uri">https://www.ncei.noaa.gov/products/optimum-interpolation-sst</a></p>
+and may be obtained from: &gt; <a href="https://www.ncei.noaa.gov/products/optimum-interpolation-sst" class="uri">https://www.ncei.noaa.gov/products/optimum-interpolation-sst</a></p>
 </div>
 <div id="r" class="section level4">
 <h4>R</h4>
 <p>The <code>R</code> directory contains the minimum code and
 documentation to recreate the figures and supplements included in this
-publication within two folders; <code>Distribution Analyses</code> and
+publication within two folders; <code>Analyses</code> and
 <code>Figures</code>.</p>
-<div id="distribution-analyses" class="section level5">
-<h5>Distribution Analyses</h5>
-<p>To replicate the distribution analyses, run the scripts in the
-following order;</p>
+<div id="analyses" class="section level5">
+<h5>Analyses</h5>
 <ul>
-<li><code>clean_trawl_data.R</code></li>
-<li><code>t_testing.R</code></li>
-<li><code>strata_effort.R</code></li>
-<li><code>stratum_16_t_testing.R</code></li>
-<li><code>signif_comparison.R</code></li>
+<li><p><code>distribution_significance_testing.R</code> performs a
+statistical t-test on species distributions pre- and post-2010. To
+complete this analyses, we selected season-strata of interest from the
+trawl survey data and calculated biomass-weighted averages of latitude,
+longitude, sea surface temperature, bottom temperature and depth for
+each species of interest. This cleaned data set is available in the data
+directory as <code>annual_averages.rds</code>.</p></li>
+<li><p>(something about growth analyses here)</p></li>
 </ul>
 </div>
 <div id="figures" class="section level5">
 <h5>Figures</h5>
-<p>These scripts should be run following the
-<code>Distribution Analyses</code>. The order in which these scripts are
-run is not important.</p>
+<p>This folder contains the scripts to create the figures featured in
+the publication and supplemental materials, labeled by figure name.</p>
 </div>
-</div>
-<div id="processed-data" class="section level4">
-<h4>Processed Data</h4>
-<p>Running the <code>Distribution Analyses</code> scripts will yield
-multiple <code>.rds</code> files within the <code>Processed Data</code>
-directory. These files are necessary for replicating the figures within
-the publication and supplement.</p>
 </div>
 </div>
 <div id="funding" class="section level3">
